@@ -4,6 +4,7 @@ from tempfile import mkdtemp
 from shutil import rmtree
 
 from cobra_ssg import cobra_render
+from cobra_utils import get_folder_list
 
 class TestCobraRender(unittest.TestCase):
     def setUp(self):
@@ -38,9 +39,16 @@ class TestCobraRender(unittest.TestCase):
         cobra_render(self.content_dir, self.build_dir)
 
         self.verify_build_dir_created()
+        self.verify_folder_tree_copied()
 
     def verify_build_dir_created(self):
         self.assertTrue(os.path.exists(self.build_dir), "The build folder wasn't created")
+
+    def verify_folder_tree_copied(self):
+        folders_in_content = get_folder_list(self.content_dir)
+        folders_in_build = get_folder_list(self.build_dir)
+        for folder in folders_in_content:
+            self.assertTrue(folder in folders_in_build, f"Folder {folder} was not created")
         
 if __name__ == '__main__':
     unittest.main()
