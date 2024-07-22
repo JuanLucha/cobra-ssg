@@ -16,14 +16,14 @@ class TestCobraRender(unittest.TestCase):
         os.makedirs(self.content_sub_dir)
         self.md_file_1 = os.path.join(self.content_dir, 'test_1.md')
         self.md_file_2 = os.path.join(self.content_sub_dir, 'test_2.md')
-        with open(self.md_file_1) as f1:
+        with open(self.md_file_1, 'w') as f1:
             f1.writelines([
                 "# Title of file 1",
                 "This is the content of file 1"
                 "[This is a link to file 2](subdir/test_2)"
             ])
         f1.close()
-        with open(self.md_file_2) as f2:
+        with open(self.md_file_2, 'w') as f2:
             f2.writelines([
                 "# Title of file 2",
                 "This is the content of file 2"
@@ -33,6 +33,14 @@ class TestCobraRender(unittest.TestCase):
     def tearDown(self):
         # Clean the mock content folder
         rmtree(self.temp_dir)
+
+    def test_cobra_render(self):
+        cobra_render(self.content_dir, self.build_dir)
+
+        self.verify_build_dir_created()
+
+    def verify_build_dir_created(self):
+        self.assertTrue(os.path.exists(self.build_dir), "The build folder wasn't created")
         
 if __name__ == '__main__':
     unittest.main()
