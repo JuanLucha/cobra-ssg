@@ -35,15 +35,18 @@ class TestCobraRender(unittest.TestCase):
         # Clean the mock content folder
         rmtree(self.temp_dir)
 
+    # Test the whole render process
     def test_cobra_render(self):
         cobra_render(self.content_dir, self.build_dir)
 
         self.verify_build_dir_created()
         self.verify_folder_tree_copied()
 
+    # Test the main 'build' folder is created
     def verify_build_dir_created(self):
         self.assertTrue(os.path.exists(self.build_dir), "The build folder wasn't created")
 
+    # Test the whole folder tree is copied from the content folder to the build folder
     def verify_folder_tree_copied(self):
         folders_in_content = get_folder_list(self.content_dir)
         folders_in_build = get_folder_list(self.build_dir)
