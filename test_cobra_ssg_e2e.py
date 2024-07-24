@@ -11,25 +11,35 @@ class TestCobraRender(unittest.TestCase):
         # Setup the mock content folder
         self.temp_dir = mkdtemp()
         self.content_dir = os.path.join(self.temp_dir, 'content')
+        self.pages_dir = os.path.join(self.content_dir, 'pages')
         self.build_dir = os.path.join(self.temp_dir, 'build')
-        self.content_sub_dir = os.path.join(self.content_dir, 'subdir')
+        self.pages_sub_dir = os.path.join(self.pages_dir, 'subdir')
         os.makedirs(self.content_dir)
-        os.makedirs(self.content_sub_dir)
-        self.md_file_1 = os.path.join(self.content_dir, 'test_1.md')
-        self.md_file_2 = os.path.join(self.content_sub_dir, 'test_2.md')
+        os.makedirs(self.pages_dir)
+        os.makedirs(self.pages_sub_dir)
+        self.layout_file = os.path.join(self.content_dir, 'layout.html')
+        self.md_file_1 = os.path.join(self.pages_dir, 'test_1.md')
+        self.md_file_2 = os.path.join(self.pages_sub_dir, 'test_2.md')
+        with open(self.layout_file, 'w') as f_layout:
+            f_layout.writelines([
+                "<html>\n",
+                "<head></head>\n",
+                "<body>\n",
+                "<cobra_ssg_content>\n",
+                "</body>\n",
+                "</html>\n",
+            ])
         with open(self.md_file_1, 'w') as f1:
             f1.writelines([
                 "# Title of file 1\n",
                 "This is the content of file 1\n"
                 "[This is a link to file 2](subdir/test_2)\n"
             ])
-        f1.close()
         with open(self.md_file_2, 'w') as f2:
             f2.writelines([
                 "# Title of file 2\n",
                 "This is the content of file 2\n"
             ])
-        f2.close()
 
     def tearDown(self):
         # Clean the mock content folder
@@ -63,20 +73,33 @@ class TestCobraRender(unittest.TestCase):
             file_without_ext = os.path.splitext(file)[0]
             self.assertTrue(file_without_ext in files_in_build, f"File {file_without_ext} was not created")
 
-    # Test that every markdown file is converted into html in the build folder
+    # Test that every markdown file is converted into html with layout in the build folder
     def verify_markdown_files_converted_to_html(self):
         files_in_build = get_file_list(self.build_dir)
         for file in files_in_build:
             file_without_ext = os.path.splitext(self.build_dir+file)[0]
             with open(file_without_ext, 'r') as f:
-                if file == '/test_1':
-                    self.assertEqual(f.read(), """<h1>Title of file 1</h1>
+                if file == '/pages/test_1':
+                    self.assertEqual(f.read(), """<html>
+<head></head>
+<body>
+<h1>Title of file 1</h1>
 <p>This is the content of file 1
-<a href="subdir/test_2">This is a link to file 2</a></p>""")
+<a href="subdir/test_2">This is a link to file 2</a></p>
+</body>
+</html>""")
 
-                if file == '/subdir/test_2':
-                    self.assertEqual(f.read(), """<h1>Title of file 2</h1>
-<p>This is the content of file 2</p>""")
+                elif file == '/pages/subdir/test_2':
+                    self.assertEqual(f.read(), """<body>
+<head></head>
+<body>
+<h1>Title of file 2</h1>
+<p>This is the content of file 2</p>
+</body>
+</html>""")
+                else:
+                    self.fail(f"The file is not covered by test cases: {file}")
+
                     
         
 if __name__ == '__main__':
