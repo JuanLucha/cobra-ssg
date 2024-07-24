@@ -42,7 +42,7 @@ class TestCobraRender(unittest.TestCase):
         self.verify_build_dir_created()
         self.verify_folder_tree_copied()
         self.verify_markdown_files_copied_to_build_folder()
-        # self.verify_markdown_files_converted_to_html()
+        self.verify_markdown_files_converted_to_html()
 
     # Test the main 'build' folder is created
     def verify_build_dir_created(self):
@@ -64,13 +64,20 @@ class TestCobraRender(unittest.TestCase):
             self.assertTrue(file_without_ext in files_in_build, f"File {file_without_ext} was not created")
 
     def verify_markdown_files_converted_to_html(self):
-        files_in_content = get_file_list(self.content_dir)
         files_in_build = get_file_list(self.build_dir)
-        for file in files_in_content:
-            print(self.build_dir+file)
-            with open(self.build_dir+file, 'r') as f:
-                self.assertTrue(file in files_in_build, f"File {file} was not created")
+        print(files_in_build)
+        for file in files_in_build:
+            file_without_ext = os.path.splitext(self.build_dir+file)[0]
+            with open(file_without_ext, 'r') as f:
+                if file == '/test_1':
+                    self.assertEqual(f.readline(), "<h1>Title of file 1</h1>")
+                    self.assertEqual(f.readline(), "This is the content of file 1")
+                    self.assertEqual(f.readline(), "<a href=\"subdir/test_2\">This is a link to file 2</a>")
 
+                if file == '/subdir/test_2':
+                    self.assertEqual(f.readline(), "<h1>Title of file 2</h1>")
+                    self.assertEqual(f.readline(), "This is the content of file 2")
+                    
         
 if __name__ == '__main__':
     unittest.main()
