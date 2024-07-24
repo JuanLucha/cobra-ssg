@@ -19,15 +19,15 @@ class TestCobraRender(unittest.TestCase):
         self.md_file_2 = os.path.join(self.content_sub_dir, 'test_2.md')
         with open(self.md_file_1, 'w') as f1:
             f1.writelines([
-                "# Title of file 1",
-                "This is the content of file 1"
-                "[This is a link to file 2](subdir/test_2)"
+                "# Title of file 1\n",
+                "This is the content of file 1\n"
+                "[This is a link to file 2](subdir/test_2)\n"
             ])
         f1.close()
         with open(self.md_file_2, 'w') as f2:
             f2.writelines([
-                "# Title of file 2",
-                "This is the content of file 2"
+                "# Title of file 2\n",
+                "This is the content of file 2\n"
             ])
         f2.close()
 
@@ -63,20 +63,20 @@ class TestCobraRender(unittest.TestCase):
             file_without_ext = os.path.splitext(file)[0]
             self.assertTrue(file_without_ext in files_in_build, f"File {file_without_ext} was not created")
 
+    # Test that every markdown file is converted into html in the build folder
     def verify_markdown_files_converted_to_html(self):
         files_in_build = get_file_list(self.build_dir)
-        print(files_in_build)
         for file in files_in_build:
             file_without_ext = os.path.splitext(self.build_dir+file)[0]
             with open(file_without_ext, 'r') as f:
                 if file == '/test_1':
-                    self.assertEqual(f.readline(), "<h1>Title of file 1</h1>")
-                    self.assertEqual(f.readline(), "This is the content of file 1")
-                    self.assertEqual(f.readline(), "<a href=\"subdir/test_2\">This is a link to file 2</a>")
+                    self.assertEqual(f.read(), """<h1>Title of file 1</h1>
+<p>This is the content of file 1
+<a href="subdir/test_2">This is a link to file 2</a></p>""")
 
                 if file == '/subdir/test_2':
-                    self.assertEqual(f.readline(), "<h1>Title of file 2</h1>")
-                    self.assertEqual(f.readline(), "This is the content of file 2")
+                    self.assertEqual(f.read(), """<h1>Title of file 2</h1>
+<p>This is the content of file 2</p>""")
                     
         
 if __name__ == '__main__':
