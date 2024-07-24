@@ -9,6 +9,7 @@ def cobra_render(source_folder = 'content', build_folder = 'build'):
 
     files_to_copy = get_file_list(source_folder)
     for file in files_to_copy:
-        with open(build_folder+file, 'w'):
+        file_without_ext = os.path.splitext(build_folder+file)[0]
+        with open(file_without_ext, 'w'):
             pass
 

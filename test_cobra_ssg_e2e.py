@@ -42,6 +42,7 @@ class TestCobraRender(unittest.TestCase):
         self.verify_build_dir_created()
         self.verify_folder_tree_copied()
         self.verify_markdown_files_copied_to_build_folder()
+        # self.verify_markdown_files_converted_to_html()
 
     # Test the main 'build' folder is created
     def verify_build_dir_created(self):
@@ -59,7 +60,17 @@ class TestCobraRender(unittest.TestCase):
         files_in_content = get_file_list(self.content_dir)
         files_in_build = get_file_list(self.build_dir)
         for file in files_in_content:
-            self.assertTrue(file in files_in_build, f"File {file} was not created")
+            file_without_ext = os.path.splitext(file)[0]
+            self.assertTrue(file_without_ext in files_in_build, f"File {file_without_ext} was not created")
+
+    def verify_markdown_files_converted_to_html(self):
+        files_in_content = get_file_list(self.content_dir)
+        files_in_build = get_file_list(self.build_dir)
+        for file in files_in_content:
+            print(self.build_dir+file)
+            with open(self.build_dir+file, 'r') as f:
+                self.assertTrue(file in files_in_build, f"File {file} was not created")
+
         
 if __name__ == '__main__':
     unittest.main()
