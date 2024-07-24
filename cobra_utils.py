@@ -7,3 +7,11 @@ def get_folder_list(path):
         for dirname in dirnames:
             folders.append(os.path.join(dirpath, dirname)[path_len:])
     return folders
+
+def get_file_list(path):
+    files = []
+    path_len = len(path)
+    for dirpath, _ , filenames in os.walk(path):
+        for file in filenames:
+            files.append(os.path.join(dirpath, file)[path_len:])
+    return files

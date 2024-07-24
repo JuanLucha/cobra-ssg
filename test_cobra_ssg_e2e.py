@@ -4,7 +4,7 @@ from tempfile import mkdtemp
 from shutil import rmtree
 
 from cobra_ssg import cobra_render
-from cobra_utils import get_folder_list, get_files_list
+from cobra_utils import get_folder_list, get_file_list
 
 class TestCobraRender(unittest.TestCase):
     def setUp(self):
@@ -41,7 +41,7 @@ class TestCobraRender(unittest.TestCase):
 
         self.verify_build_dir_created()
         self.verify_folder_tree_copied()
-        self.verify_markdown_files_converted_to_html()
+        self.verify_markdown_files_copied_to_build_folder()
 
     # Test the main 'build' folder is created
     def verify_build_dir_created(self):
@@ -54,10 +54,10 @@ class TestCobraRender(unittest.TestCase):
         for folder in folders_in_content:
             self.assertTrue(folder in folders_in_build, f"Folder {folder} was not created")
 
-    # Test that every markdown file in the content folder is converted to html and copied in the build folder
-    def verify_markdown_files_converted_to_html(self):
-        files_in_content = get_files_list(self.content_dir)
-        files_in_build = get_files_list(self.build_dir)
+    # Test that every markdown file in the content folder is copied to the build folder
+    def verify_markdown_files_copied_to_build_folder(self):
+        files_in_content = get_file_list(self.content_dir)
+        files_in_build = get_file_list(self.build_dir)
         for file in files_in_content:
             self.assertTrue(file in files_in_build, f"File {file} was not created")
         
