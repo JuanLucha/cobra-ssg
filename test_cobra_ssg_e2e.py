@@ -12,12 +12,14 @@ class TestCobraRender(unittest.TestCase):
         self.temp_dir = mkdtemp()
         self.content_dir = os.path.join(self.temp_dir, 'content')
         self.pages_dir = os.path.join(self.content_dir, 'pages')
+        self.layouts_dir = os.path.join(self.content_dir, 'layouts')
         self.build_dir = os.path.join(self.temp_dir, 'build')
         self.pages_sub_dir = os.path.join(self.pages_dir, 'subdir')
         os.makedirs(self.content_dir)
         os.makedirs(self.pages_dir)
+        os.makedirs(self.layouts_dir)
         os.makedirs(self.pages_sub_dir)
-        self.layout_file = os.path.join(self.content_dir, 'layout.html')
+        self.layout_file = os.path.join(self.layouts_dir, 'layout.html')
         self.md_file_1 = os.path.join(self.pages_dir, 'test_1.md')
         self.md_file_2 = os.path.join(self.pages_sub_dir, 'test_2.md')
         with open(self.layout_file, 'w') as f_layout:
@@ -58,12 +60,15 @@ class TestCobraRender(unittest.TestCase):
     def verify_build_dir_created(self):
         self.assertTrue(os.path.exists(self.build_dir), "The build folder wasn't created")
 
-    # Test the whole folder tree is copied from the content folder to the build folder
+    # Test the whole folder tree is copied from the content folder to the build folder, ignoring layouts folder
     def verify_folder_tree_copied(self):
         folders_in_content = get_folder_list(self.content_dir)
         folders_in_build = get_folder_list(self.build_dir)
         for folder in folders_in_content:
-            self.assertTrue(folder in folders_in_build, f"Folder {folder} was not created")
+            if folder == '/layouts':
+                self.assertFalse(folder in folders_in_build, f"Folder {folder} was created, but it shouldn't")
+            else:
+                self.assertTrue(folder in folders_in_build, f"Folder {folder} was not created")
 
     # Test that every markdown file in the content folder is copied to the build folder
     def verify_markdown_files_copied_to_build_folder(self):
