@@ -13,10 +13,9 @@ def get_folder_list(path, ignore_folders=[]):
 def get_file_list(path, ignore_folders=[]):
     files = []
     path_len = len(path)
-    for dirpath, folders, filenames in os.walk(path):
-        for folder in folders:
-            if folder in ignore_folders:
-                continue
-            for file in filenames:
-                files.append(os.path.join(dirpath, file)[path_len:])
+    for dirpath, _, filenames in os.walk(path):
+        if os.path.basename(dirpath) in ignore_folders:
+            continue
+        for file in filenames:
+            files.append(os.path.join(dirpath, file)[path_len:])
     return files

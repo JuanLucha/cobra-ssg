@@ -72,8 +72,10 @@ class TestCobraRender(unittest.TestCase):
 
     # Test that every markdown file in the content folder is copied to the build folder
     def verify_markdown_files_copied_to_build_folder(self):
-        files_in_content = get_file_list(self.content_dir)
+        files_in_content = get_file_list(self.content_dir, ['layouts'])
         files_in_build = get_file_list(self.build_dir)
+        if len(files_in_build) == 0:
+            self.fail("There is no files in the build folder!")
         for file in files_in_content:
             file_without_ext = os.path.splitext(file)[0]
             self.assertTrue(file_without_ext in files_in_build, f"File {file_without_ext} was not created")
@@ -81,6 +83,8 @@ class TestCobraRender(unittest.TestCase):
     # Test that every markdown file is converted into html with layout in the build folder
     def verify_markdown_files_converted_to_html(self):
         files_in_build = get_file_list(self.build_dir)
+        if len(files_in_build) == 0:
+            self.fail("There is no files in the build folder!")
         for file in files_in_build:
             file_without_ext = os.path.splitext(self.build_dir+file)[0]
             with open(file_without_ext, 'r') as f:
@@ -92,20 +96,20 @@ class TestCobraRender(unittest.TestCase):
 <p>This is the content of file 1
 <a href="subdir/test_2">This is a link to file 2</a></p>
 </body>
-</html>""")
+</html>
+""")
 
                 elif file == '/pages/subdir/test_2':
-                    self.assertEqual(f.read(), """<body>
+                    self.assertEqual(f.read(), """<html>
 <head></head>
 <body>
 <h1>Title of file 2</h1>
 <p>This is the content of file 2</p>
 </body>
-</html>""")
+</html>
+""")
                 else:
                     self.fail(f"The file is not covered by test cases: {file}")
-
-                    
         
 if __name__ == '__main__':
     unittest.main()
