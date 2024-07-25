@@ -20,6 +20,7 @@ class TestCobraRender(unittest.TestCase):
         os.makedirs(self.layouts_dir)
         os.makedirs(self.pages_sub_dir)
         self.layout_file = os.path.join(self.layouts_dir, 'layout.html')
+        self.global_css_file = os.path.join(self.layouts_dir, 'global.css')
         self.md_file_1 = os.path.join(self.pages_dir, 'test_1.md')
         self.md_file_2 = os.path.join(self.pages_sub_dir, 'test_2.md')
         with open(self.layout_file, 'w') as f_layout:
@@ -30,6 +31,13 @@ class TestCobraRender(unittest.TestCase):
                 "<cobra_ssg_content>\n",
                 "</body>\n",
                 "</html>\n",
+            ])
+        with open(self.global_css_file, 'w') as f_global_css:
+            f_global_css.writelines([
+                "* {\n",
+                "  margin:0\n",
+                "  padding:0\n",
+                "}\n",
             ])
         with open(self.md_file_1, 'w') as f1:
             f1.writelines([
@@ -55,6 +63,7 @@ class TestCobraRender(unittest.TestCase):
         self.verify_folder_tree_copied()
         self.verify_markdown_files_copied_to_build_folder()
         self.verify_markdown_files_converted_to_html()
+        self.verify_global_css_is_attached()
 
     # Test the main 'build' folder is created
     def verify_build_dir_created(self):
@@ -111,6 +120,18 @@ class TestCobraRender(unittest.TestCase):
                 else:
                     self.fail(f"The file is not covered by test cases: {file}")
         
+    # Test that global css file is attached to every page
+    def verify_global_css_is_attached(self):
+        files_in_build = get_file_list(self.build_dir)
+        for file in files_in_build:
+            file_without_ext = os.path.splitext(self.build_dir+file)[0]
+            with open(file_without_ext, 'r') as f:
+                if file == '/pages/test_1':
+                    self.assertIn('<link rel="stylesheet" href="../layouts/global.css">', f.read())
+                elif file == '/pages/subdir/test_2':
+                    self.assertIn('<link rel="stylesheet" href="../../layouts/global.css">', f.read())
+
+
 if __name__ == '__main__':
     unittest.main()
 
