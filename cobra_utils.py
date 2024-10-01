@@ -5,7 +5,7 @@ def get_folder_list(path, ignore_folders=[]):
     path_len = len(path)
     for dirpath, dirnames, _ in os.walk(path):
         for dirname in dirnames:
-            if dirname in ignore_folders:
+            if dirname in ignore_folders or os.path.basename(dirpath) in ignore_folders:
                 continue
             folders.append(os.path.join(dirpath, dirname)[path_len:])
     return folders
