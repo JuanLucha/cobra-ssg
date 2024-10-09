@@ -8,6 +8,7 @@ def cobra_render(source_folder = 'content', build_folder = 'build'):
     css_folder_source = f"{source_folder}/{layouts_folder}/css"
     css_folder_target = f"{build_folder}/css"
     layouts_full_path = os.path.join(source_folder, layouts_folder)
+    menus_full_path = os.path.join(layouts_full_path, 'menus')
     content_tag = '<cobra_ssg_content>'
 
     # Create the folder structure
@@ -27,6 +28,22 @@ def cobra_render(source_folder = 'content', build_folder = 'build'):
     for layout in layouts_to_load:
         with open(layouts_full_path+layout, 'r', encoding='utf-8') as layout_content:
             layouts.append({'name': layout, 'content': layout_content.read()})
+
+    # Load menus
+    menus = []
+    menus_to_load = [menu for menu in get_file_list(path=menus_full_path)]
+    for menu in menus_to_load:
+        with open(menus_full_path+menu, 'r', encoding='utf-8') as menu_content:
+            tag = f"<menu_{os.path.splitext(menu)[0].lstrip('/')}>"
+            menus.append({'tag': tag, 'content': menu_content.read()})
+
+    # insert the menus into the layouts
+    for layout in layouts:
+        for menu in menus:
+            if menu["tag"] in layout["content"]:
+                print(menu["tag"])
+                layout["content"] = layout["content"].replace(menu["tag"], menu["content"])
+
 
     # Convert markdown to html and copies the file in the build folder
     content_files_to_copy = get_file_list(path=source_folder, ignore_folders=[layouts_folder, "css", "menus"])
