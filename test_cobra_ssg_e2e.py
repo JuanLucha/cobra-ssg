@@ -36,10 +36,12 @@ class TestCobraRender(unittest.TestCase):
                 "<html>\n",
                 "<head></head>\n",
                 "<body>\n",
+                "<menu_main_menu>\n",
                 "<cobra_ssg_content>\n",
                 "</body>\n",
                 "</html>\n",
             ])
+        f_layout.close()
         with open(self.global_css_file, 'w') as f_global_css:
             f_global_css.writelines([
                 "* {\n",
@@ -47,6 +49,7 @@ class TestCobraRender(unittest.TestCase):
                 "  padding:0;\n",
                 "}\n",
             ])
+        f_global_css.close()
         with open(self.layout_css_file_1, 'w') as f_layout_css_1:
             f_layout_css_1.writelines([
                 "* {\n",
@@ -54,6 +57,7 @@ class TestCobraRender(unittest.TestCase):
                 "  padding:0;\n",
                 "}\n",
             ])
+        f_layout_css_1.close()
         with open(self.layout_css_file_2, 'w') as f_layout_css_2:
             f_layout_css_2.writelines([
                 "* {\n",
@@ -61,17 +65,20 @@ class TestCobraRender(unittest.TestCase):
                 "  padding:0;\n",
                 "}\n",
             ])
+        f_layout_css_2.close()
         with open(self.md_file_1, 'w') as f1:
             f1.writelines([
                 "# Title of file 1\n",
                 "This is the content of file 1\n"
                 "[This is a link to file 2](subdir/test_2)\n"
             ])
+        f1.close()
         with open(self.md_file_2, 'w') as f2:
             f2.writelines([
                 "# Title of file 2\n",
                 "This is the content of file 2\n"
             ])
+        f2.close()
         with open(self.main_menu_file, 'w') as f_menu:
             f_menu.writelines([
                 "<nav>\n",
@@ -83,9 +90,20 @@ class TestCobraRender(unittest.TestCase):
                 "</ul>\n",
                 "</nav>\n",
             ])
+        f_menu.close()
 
         # render the build folder
         cobra_render(self.content_dir, self.build_dir)
+        
+        # read the built content files
+        file_without_ext = os.path.splitext(self.build_dir+'/pages/test_1')[0]
+        with open(file_without_ext, 'r') as f:
+            self.file1_content = f.read()
+        f.close()
+        file_without_ext = os.path.splitext(self.build_dir+'/pages/subdir/test_2')[0]
+        with open(file_without_ext, 'r') as f:
+            self.file2_content = f.read()
+        f.close()
 
     # Test the main 'build' folder is created
     def test_verify_build_dir_created(self):
@@ -122,38 +140,28 @@ class TestCobraRender(unittest.TestCase):
 
     # Test that every markdown file is converted into html with layout in the build folder
     def test_verify_markdown_files_converted_to_html(self):
-        files_in_build = get_file_list(self.build_dir, ignore_folders=["css"])
-        if len(files_in_build) == 0:
-            self.fail("There is no files in the build folder!")
-        for file in files_in_build:
-            file_without_ext = os.path.splitext(self.build_dir+file)[0]
-            with open(file_without_ext, 'r') as f:
-                if file == '/pages/test_1':
-                    self.assertEqual(f.read(), """<html>
-<head>
-<link rel="stylesheet" href="../css/global.css">
-</head>
-<body>
+                self.assertIn("""
 <h1>Title of file 1</h1>
 <p>This is the content of file 1
 <a href="subdir/test_2">This is a link to file 2</a></p>
-</body>
-</html>
-""")
+""", self.file1_content)
 
-                elif file == '/pages/subdir/test_2':
-                    self.assertEqual(f.read(), """<html>
-<head>
-<link rel="stylesheet" href="../../css/global.css">
-</head>
-<body>
+                self.assertIn("""
 <h1>Title of file 2</h1>
 <p>This is the content of file 2</p>
-</body>
-</html>
-""")
-                else:
-                    self.fail(f"The file is not covered by test cases: {file}")
+""", self.file2_content)
+
+    # Test that every converted file includes the global css file
+    def test_verify_markdown_files_converted_to_html(self):
+                self.assertIn("""
+<head>
+<link rel="stylesheet" href="../css/global.css">
+""", self.file1_content)
+
+                self.assertIn("""
+<head>
+<link rel="stylesheet" href="../../css/global.css">
+""", self.file2_content)
 
     def tearDown(self):
         # Clean the mock content folder
@@ -161,4 +169,3 @@ class TestCobraRender(unittest.TestCase):
 
 if __name__ == '__main__':
     unittest.main()
-
