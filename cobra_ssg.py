@@ -9,8 +9,6 @@ def cobra_render(source_folder = 'content', build_folder = 'build'):
     css_folder_target = f"{build_folder}/css"
     layouts_full_path = os.path.join(source_folder, layouts_folder)
     content_tag = '<cobra_ssg_content>'
-    css_folder = os.path.join(build_folder, 'css')
-    global_css_path = os.path.join(css_folder, 'global.css')
 
     # Create the folder structure
     os.mkdir(build_folder)
@@ -31,8 +29,7 @@ def cobra_render(source_folder = 'content', build_folder = 'build'):
             layouts.append({'name': layout, 'content': layout_content.read()})
 
     # Convert markdown to html and copies the file in the build folder
-    content_files_to_copy = get_file_list(path=source_folder, ignore_folders=[layouts_folder, "css"])
-    css_files_to_copy = get_file_list(path=css_folder)
+    content_files_to_copy = get_file_list(path=source_folder, ignore_folders=[layouts_folder, "css", "menus"])
     if not len(content_files_to_copy):
         raise Exception(f"No files found in {source_folder}")
     for file in content_files_to_copy:
