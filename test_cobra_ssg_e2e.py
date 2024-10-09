@@ -70,23 +70,15 @@ class TestCobraRender(unittest.TestCase):
                 "This is the content of file 2\n"
             ])
 
-    # Test the whole render process
-    def test_cobra_render(self):
+        # render the build folder
         cobra_render(self.content_dir, self.build_dir)
 
-        self.verify_build_dir_created()
-        self.verify_folder_tree_copied()
-        self.verify_markdown_files_copied_to_build_folder()
-        self.verify_markdown_files_converted_to_html()
-
     # Test the main 'build' folder is created
-    def verify_build_dir_created(self):
-        print("\nTesting the build dir is created...")
+    def test_verify_build_dir_created(self):
         self.assertTrue(os.path.exists(self.build_dir), "The build folder wasn't created")
 
     # Test the whole folder tree is copied from the content folder to the build folder, ignoring layouts folder
-    def verify_folder_tree_copied(self):
-        print("Testing the folder tree is copied...")
+    def test_verify_folder_tree_copied(self):
         folders_in_content = get_folder_list(self.content_dir)
         folders_in_build = get_folder_list(self.build_dir)
         for folder in folders_in_content:
@@ -99,8 +91,7 @@ class TestCobraRender(unittest.TestCase):
                 self.assertTrue(folder in folders_in_build, f"Folder {folder} was not created")
 
     # Test that every markdown file in the content folder is copied to the build folder
-    def verify_markdown_files_copied_to_build_folder(self):
-        print("Testing the markdown files are copied to the build folder...")
+    def test_verify_markdown_files_copied_to_build_folder(self):
         files_in_content = get_file_list(self.content_dir, ['layouts'])
         files_in_build = get_file_list(self.build_dir)
         if len(files_in_build) == 0:
@@ -114,8 +105,7 @@ class TestCobraRender(unittest.TestCase):
             self.assertTrue(file_to_check in files_in_build, f"File {file_to_check} was not created")
 
     # Test that every markdown file is converted into html with layout in the build folder
-    def verify_markdown_files_converted_to_html(self):
-        print("Testing the markdown files are converted to html...")
+    def test_verify_markdown_files_converted_to_html(self):
         files_in_build = get_file_list(self.build_dir, ignore_folders=["css"])
         if len(files_in_build) == 0:
             self.fail("There is no files in the build folder!")

@@ -18,6 +18,8 @@ There are some mandatory files and folders to be found in the `content/layouts` 
 - `content/layouts/css/global.css`: this file contains all the shared css rules for the site.
 - `content/layouts/default.html`: this file contains the default layout for your site. It's not used for the blog, as the blog has its own layout files. If a page don't have a layout defined in its front matter in the `layout` variable, this `default.html` file will be used when converting the page's markdown to html.
 - `content/layouts/css/default.css`: this file contains the style rules of the default template.
+- `content/layouts/css/menus.css`: this file is only mandatory if you have files in the `content/layouts/menus` folder on the site. If that's not the case, you can skip it. It contains the specific style rules that only the menus used on the site.
+- `content/layouts/post.html`: this file is only mandatory if you have a `content/blog` folder on the site. If that's not the case, you can skip it. It contains the html layout for the list of posts.
 - `content/layouts/blog.html`: this file is only mandatory if you have a `content/blog` folder on the site. If that's not the case, you can skip it. It contains the html layout for the list of posts.
 - `content/layouts/css/blog.css`: this file is only mandatory if you have a `content/blog` folder on the site. If that's not the case, you can skip it. It contains the specific style rules that only the post list will use.
 - `content/layouts/post.html`: this file is only mandatory if you have a `content/blog` folder on the site. If that's not the case, you can skip it. It contains the html layout for the list of posts.
@@ -26,6 +28,25 @@ There are some mandatory files and folders to be found in the `content/layouts` 
 In order to create a new layout, you create a file under `content/layouts` with the name of the layout and html extension, like `content/layouts/new-layout.html`. In the content of the file, create the layout in html. Don't include the base tags, like `<html>`, `<head>` or `<body>`, as those will be inserted automatically during the build process.
 
 If you need specific css rules for this new layout, include it in a css file with the same name. In this example, that file would be `content/layouts/css/new-layout.css`.
+
+The layout html content should include a `<cobra_ssg_content>` tag. That tab will be replaced with the content of the actual route. For example, if the page the user is in is `/about` and that page uses de `default` layout, the content of the `content/pages/about.md` page will be inserted in the `<cobra_ssg_content>` place in the html document.
+
+### Menus
+
+Menus are collections of links that are reusable in different layouts. They are located in the `content/layouts/menus` folder. Their css rules should be placed in the `content/layouts/css/menus.css` file. The menu file should be an html file containing the html of the menu. For example, `content/layouts/menus/main-menu.html` could have this content:
+
+```html
+<nav>
+    <ul>
+      <li><a href="/section1">Section 1</a></li>
+      <li><a href="/section2">Section 2</a></li>
+      <li><a href="/section3">Section 3</a></li>
+      <li><a href="/section4">Section 4</a></li>
+    </ul>
+</nav>
+```
+
+To use that you need to put a tag in the desired place inside the html content of the layout with this format: `<menu_[name-of-the-menu-file]>`. For example, if the menu file is `content/layouts/menus/main-menu.html`, then the tag inside the layout using that menu should be `<menu_main-menu>`
 
 ### Blog
 
