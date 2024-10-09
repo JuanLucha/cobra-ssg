@@ -139,29 +139,44 @@ class TestCobraRender(unittest.TestCase):
             self.assertTrue(file_to_check in files_in_build, f"File {file_to_check} was not created")
 
     # Test that every markdown file is converted into html with layout in the build folder
-    def test_verify_markdown_files_converted_to_html(self):
-                self.assertIn("""
+    def test_markdown_files_converted_to_html(self):
+        self.assertIn("""
 <h1>Title of file 1</h1>
 <p>This is the content of file 1
 <a href="subdir/test_2">This is a link to file 2</a></p>
 """, self.file1_content)
 
-                self.assertIn("""
+        self.assertIn("""
 <h1>Title of file 2</h1>
 <p>This is the content of file 2</p>
 """, self.file2_content)
 
     # Test that every converted file includes the global css file
-    def test_verify_markdown_files_converted_to_html(self):
-                self.assertIn("""
+    def test_global_css_is_included(self):
+        self.assertIn("""
 <head>
 <link rel="stylesheet" href="../css/global.css">
 """, self.file1_content)
 
-                self.assertIn("""
+        self.assertIn("""
 <head>
 <link rel="stylesheet" href="../../css/global.css">
 """, self.file2_content)
+
+    # Test that the main menu is included in the layout
+    def test_main_menu_is_included(self):
+        for file in [self.file1_content, self.file2_content]:
+            self.assertIn("""
+<body>
+<nav>
+<ul>
+<li><a href="/section1">Section 1</a></li>
+<li><a href="/section2">Section 2</a></li>
+<li><a href="/section3">Section 3</a></li>
+<li><a href="/section4">Section 4</a></li>
+</ul>
+</nav>
+""", file)
 
     def tearDown(self):
         # Clean the mock content folder
