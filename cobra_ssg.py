@@ -41,9 +41,7 @@ def cobra_render(source_folder = 'content', build_folder = 'build'):
     for layout in layouts:
         for menu in menus:
             if menu["tag"] in layout["content"]:
-                print(menu["tag"])
                 layout["content"] = layout["content"].replace(menu["tag"], menu["content"])
-
 
     # Convert markdown to html and copies the file in the build folder
     content_files_to_copy = get_file_list(path=source_folder, ignore_folders=[layouts_folder, "css", "menus"])

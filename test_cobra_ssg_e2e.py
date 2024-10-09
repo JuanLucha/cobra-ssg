@@ -24,17 +24,33 @@ class TestCobraRender(unittest.TestCase):
         os.makedirs(self.css_dir_source)
         os.makedirs(self.pages_sub_dir)
         os.makedirs(self.menus_dir)
-        self.layout_file = os.path.join(self.layouts_dir, 'layout.html')
+        self.layout_file_1 = os.path.join(self.layouts_dir, 'default.html')
+        self.layout_file_2 = os.path.join(self.layouts_dir, 'layout_alternative.html')
         self.global_css_file = os.path.join(self.css_dir_source, 'global.css')
         self.layout_css_file_1 = os.path.join(self.css_dir_source, 'test_1.css')
         self.layout_css_file_2 = os.path.join(self.css_dir_source, 'test_2.css')
         self.md_file_1 = os.path.join(self.pages_dir, 'test_1.md')
         self.md_file_2 = os.path.join(self.pages_sub_dir, 'test_2.md')
         self.main_menu_file = os.path.join(self.menus_dir, 'main_menu.html')
-        with open(self.layout_file, 'w') as f_layout:
+        with open(self.layout_file_1, 'w') as f_layout:
             f_layout.writelines([
                 "<html>\n",
-                "<head></head>\n",
+                "<head>\n"
+                "<title>Title of the default layout</title>"
+                "</head>\n",
+                "<body>\n",
+                "<menu_main_menu>\n",
+                "<cobra_ssg_content>\n",
+                "</body>\n",
+                "</html>\n",
+            ])
+        f_layout.close()
+        with open(self.layout_file_2, 'w') as f_layout:
+            f_layout.writelines([
+                "<html>\n",
+                "<head>\n"
+                "<title>Title of the layout alternative</title>"
+                "</head>\n",
                 "<body>\n",
                 "<menu_main_menu>\n",
                 "<cobra_ssg_content>\n",
@@ -75,6 +91,9 @@ class TestCobraRender(unittest.TestCase):
         f1.close()
         with open(self.md_file_2, 'w') as f2:
             f2.writelines([
+                "---\n",
+                "layout: layout_alternative"
+                "---\n",
                 "# Title of file 2\n",
                 "This is the content of file 2\n"
             ])
@@ -154,13 +173,13 @@ class TestCobraRender(unittest.TestCase):
     # Test that every converted file includes the global css file
     def test_global_css_is_included(self):
         self.assertIn("""
-<head>
 <link rel="stylesheet" href="../css/global.css">
+</head>
 """, self.file1_content)
 
         self.assertIn("""
-<head>
 <link rel="stylesheet" href="../../css/global.css">
+</head>
 """, self.file2_content)
 
     # Test that the main menu is included in the layout
@@ -177,6 +196,11 @@ class TestCobraRender(unittest.TestCase):
 </ul>
 </nav>
 """, file)
+
+    # Test that the right layout is used in rendering each markdown file
+    def test_the_right_layout_is_used(self):
+        self.assertIn("<title>Title of the default layout</title>", self.file1_content)
+        self.assertIn("<title>Title of the layout alternative</title>", self.file2_content)
 
     def tearDown(self):
         # Clean the mock content folder

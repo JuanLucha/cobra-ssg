@@ -17,7 +17,7 @@ There are some mandatory files and folders to be found in the `content/layouts` 
 - `content/layouts/css`: this folder will contain all the css files used on the site.
 - `content/layouts/css/global.css`: this file contains all the shared css rules for the site.
 - `content/layouts/default.html`: this file contains the default layout for your site. It's not used for the blog, as the blog has its own layout files. If a page don't have a layout defined in its front matter in the `layout` variable, this `default.html` file will be used when converting the page's markdown to html.
-- `content/layouts/css/default.css`: this file contains the style rules of the default template.
+- `content/layouts/css/global.css`: this file contains the style rules of the default template.
 - `content/layouts/css/menus.css`: this file is only mandatory if you have files in the `content/layouts/menus` folder on the site. If that's not the case, you can skip it. It contains the specific style rules that only the menus used on the site.
 - `content/layouts/post.html`: this file is only mandatory if you have a `content/blog` folder on the site. If that's not the case, you can skip it. It contains the html layout for the list of posts.
 - `content/layouts/blog.html`: this file is only mandatory if you have a `content/blog` folder on the site. If that's not the case, you can skip it. It contains the html layout for the list of posts.
