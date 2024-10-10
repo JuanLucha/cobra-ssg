@@ -24,6 +24,7 @@ There are some mandatory files and folders to be found in the `content/layouts` 
 - `content/layouts/css/blog.css`: this file is only mandatory if you have a `content/blog` folder on the site. If that's not the case, you can skip it. It contains the specific style rules that only the post list will use.
 - `content/layouts/post.html`: this file is only mandatory if you have a `content/blog` folder on the site. If that's not the case, you can skip it. It contains the html layout for the list of posts.
 - `content/layouts/css/post.css`: this file is only mandatory if you have a `content/blog` folder on the site. If that's not the case, you can skip it. It contains the specific style rules that only the post content page will use.
+- `content/layouts/js/global.js`: this file contains the javascript code shared by the whole site.
 
 In order to create a new layout, you create a file under `content/layouts` with the name of the layout and html extension, like `content/layouts/new-layout.html`. In the content of the file, create the layout in html. Don't include the base tags, like `<html>`, `<head>` or `<body>`, as those will be inserted automatically during the build process.
 

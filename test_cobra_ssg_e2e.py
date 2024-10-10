@@ -14,6 +14,7 @@ class TestCobraRender(unittest.TestCase):
         self.pages_dir = os.path.join(self.content_dir, 'pages')
         self.layouts_dir = os.path.join(self.content_dir, 'layouts')
         self.css_dir_source = os.path.join(self.layouts_dir, 'css')
+        self.js_dir = os.path.join(self.layouts_dir, 'js')
         self.build_dir = os.path.join(self.temp_dir, 'build')
         self.css_dir_target = os.path.join(self.build_dir, 'css')
         self.pages_sub_dir = os.path.join(self.pages_dir, 'subdir')
@@ -24,6 +25,7 @@ class TestCobraRender(unittest.TestCase):
         os.makedirs(self.css_dir_source)
         os.makedirs(self.pages_sub_dir)
         os.makedirs(self.menus_dir)
+        os.makedirs(self.js_dir)
         self.layout_file_1 = os.path.join(self.layouts_dir, 'default.html')
         self.layout_file_2 = os.path.join(self.layouts_dir, 'layout_alternative.html')
         self.global_css_file = os.path.join(self.css_dir_source, 'global.css')
@@ -32,6 +34,7 @@ class TestCobraRender(unittest.TestCase):
         self.md_file_1 = os.path.join(self.pages_dir, 'test_1.md')
         self.md_file_2 = os.path.join(self.pages_sub_dir, 'test_2.md')
         self.main_menu_file = os.path.join(self.menus_dir, 'main_menu.html')
+        self.js_file = os.path.join(self.js_dir, 'global.js')
         with open(self.layout_file_1, 'w') as f_layout:
             f_layout.writelines([
                 "<html>\n",
@@ -110,6 +113,11 @@ class TestCobraRender(unittest.TestCase):
                 "</nav>\n",
             ])
         f_menu.close()
+        with open(self.js_file, 'w') as f_js:
+            f_js.writelines([
+                "console.log(1+1)\n",
+            ])
+        f_js.close()
 
         # render the build folder
         cobra_render(self.content_dir, self.build_dir)
@@ -133,11 +141,13 @@ class TestCobraRender(unittest.TestCase):
         folders_in_content = get_folder_list(self.content_dir)
         folders_in_build = get_folder_list(self.build_dir)
         for folder in folders_in_content:
-            # The /layouts/css folder is copied to /css
+            
             if folder == '/layouts/menus':
                 continue
-            if folder == '/layouts/css':
+            if folder == '/layouts/css':        # The /layouts/css folder is copied to /css
                 folder = '/css'
+            if folder == '/layouts/js':
+                folder = '/js'
             if folder == '/layouts':
                 self.assertFalse(folder in folders_in_build, f"Folder {folder} was created, but it shouldn't")
             else:
@@ -153,6 +163,8 @@ class TestCobraRender(unittest.TestCase):
             file_name, file_extension = os.path.splitext(file)
             if file_extension == ".css":
                 file_to_check = file.replace('/layouts/css', '/css')
+            if file_extension == ".js":
+                file_to_check = file.replace('/layouts/js', '/js')
             else:
                 file_to_check = file_name
             self.assertTrue(file_to_check in files_in_build, f"File {file_to_check} was not created")
@@ -174,11 +186,21 @@ class TestCobraRender(unittest.TestCase):
     def test_global_css_is_included(self):
         self.assertIn("""
 <link rel="stylesheet" href="../css/global.css">
-</head>
 """, self.file1_content)
 
         self.assertIn("""
 <link rel="stylesheet" href="../../css/global.css">
+""", self.file2_content)
+
+    # Test that every converted file includes the global js file
+    def test_global_js_is_included(self):
+        self.assertIn("""
+<script src="../../js/global.js" defer></script>
+</head>
+""", self.file1_content)
+
+        self.assertIn("""
+<script src="../../js/global.js" defer></script>
 </head>
 """, self.file2_content)
 
