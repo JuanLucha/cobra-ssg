@@ -1,5 +1,6 @@
 import os
 import markdown
+import frontmatter
 import shutil
 from cobra_utils import get_file_list, get_folder_list
 
@@ -22,12 +23,13 @@ def cobra_render(source_folder = 'content', build_folder = 'build'):
 
     # Load layouts
     layouts = []
-    layouts_to_load = [layout for layout in get_file_list(path=layouts_full_path) if os.path.splitext(layout)[1] != '.css']
+    layouts_to_load = [layout for layout in get_file_list(path=layouts_full_path, ignore_folders=["menus"]) if os.path.splitext(layout)[1] != '.css']
     if not len(layouts_to_load):
         raise Exception(f"No layouts found in {layouts_full_path}")
     for layout in layouts_to_load:
         with open(layouts_full_path+layout, 'r', encoding='utf-8') as layout_content:
-            layouts.append({'name': layout, 'content': layout_content.read()})
+            name = os.path.splitext(layout)[0].lstrip('/')
+            layouts.append({'name': name, 'content': layout_content.read()})
 
     # Load menus
     menus = []
@@ -53,8 +55,12 @@ def cobra_render(source_folder = 'content', build_folder = 'build'):
         global_css_string = f"<link rel=\"stylesheet\" href=\"{backtracks*'../'}css/global.css\">"
         with open(source_folder+file, 'r', encoding='utf-8') as f:
             try:
-                html_page_content = markdown.markdown(f.read())
-                html_file_content = layouts[0]['content'].replace(content_tag, html_page_content)
+                file_content_raw = f.read()
+                page_frontmatter, file_content = frontmatter.parse(file_content_raw)
+                layout_name = page_frontmatter.get("layout", "default")
+                layout = next((layout for layout in layouts if layout["name"] == layout_name), None)
+                html_page_content = markdown.markdown(file_content)
+                html_file_content = layout['content'].replace(content_tag, html_page_content)
                 # Insert global css path
                 if "</head>" in html_file_content:
                     html_file_content = html_file_content.replace('</head>', f'\n{global_css_string}\n</head>')

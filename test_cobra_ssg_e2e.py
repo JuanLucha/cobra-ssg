@@ -92,7 +92,7 @@ class TestCobraRender(unittest.TestCase):
         with open(self.md_file_2, 'w') as f2:
             f2.writelines([
                 "---\n",
-                "layout: layout_alternative"
+                "layout: layout_alternative\n"
                 "---\n",
                 "# Title of file 2\n",
                 "This is the content of file 2\n"
