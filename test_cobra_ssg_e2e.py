@@ -141,14 +141,13 @@ class TestCobraRender(unittest.TestCase):
         folders_in_content = get_folder_list(self.content_dir)
         folders_in_build = get_folder_list(self.build_dir)
         for folder in folders_in_content:
-            
             if folder == '/layouts/menus':
                 continue
-            if folder == '/layouts/css':        # The /layouts/css folder is copied to /css
+            elif folder == '/layouts/css':        # The /layouts/css folder is copied to /css
                 folder = '/css'
-            if folder == '/layouts/js':
+            elif folder == '/layouts/js':         # The /layouts/js folder is copied to /js
                 folder = '/js'
-            if folder == '/layouts':
+            elif folder == '/layouts':
                 self.assertFalse(folder in folders_in_build, f"Folder {folder} was created, but it shouldn't")
             else:
                 self.assertTrue(folder in folders_in_build, f"Folder {folder} was not created")
@@ -163,7 +162,7 @@ class TestCobraRender(unittest.TestCase):
             file_name, file_extension = os.path.splitext(file)
             if file_extension == ".css":
                 file_to_check = file.replace('/layouts/css', '/css')
-            if file_extension == ".js":
+            elif file_extension == ".js":
                 file_to_check = file.replace('/layouts/js', '/js')
             else:
                 file_to_check = file_name
@@ -195,7 +194,7 @@ class TestCobraRender(unittest.TestCase):
     # Test that every converted file includes the global js file
     def test_global_js_is_included(self):
         self.assertIn("""
-<script src="../../js/global.js" defer></script>
+<script src="../js/global.js" defer></script>
 </head>
 """, self.file1_content)
 

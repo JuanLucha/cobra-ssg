@@ -8,6 +8,8 @@ def cobra_render(source_folder = 'content', build_folder = 'build'):
     layouts_folder = 'layouts'
     css_folder_source = f"{source_folder}/{layouts_folder}/css"
     css_folder_target = f"{build_folder}/css"
+    js_folder_source = f"{source_folder}/{layouts_folder}/js"
+    js_folder_target = f"{build_folder}/js"
     layouts_full_path = os.path.join(source_folder, layouts_folder)
     menus_full_path = os.path.join(layouts_full_path, 'menus')
     content_tag = '<cobra_ssg_content>'
@@ -20,6 +22,9 @@ def cobra_render(source_folder = 'content', build_folder = 'build'):
 
     # Copy the css files
     shutil.copytree(css_folder_source, css_folder_target)
+
+    # Copy the js files
+    shutil.copytree(js_folder_source, js_folder_target)
 
     # Load layouts
     layouts = []
@@ -46,13 +51,14 @@ def cobra_render(source_folder = 'content', build_folder = 'build'):
                 layout["content"] = layout["content"].replace(menu["tag"], menu["content"])
 
     # Convert markdown to html and copies the file in the build folder
-    content_files_to_copy = get_file_list(path=source_folder, ignore_folders=[layouts_folder, "css", "menus"])
+    content_files_to_copy = get_file_list(path=source_folder, ignore_folders=[layouts_folder, "css", "menus", "js"])
     if not len(content_files_to_copy):
         raise Exception(f"No files found in {source_folder}")
     for file in content_files_to_copy:
         html_file_content = ''
         backtracks = max(file.count("/") - 1, 0)
         global_css_string = f"<link rel=\"stylesheet\" href=\"{backtracks*'../'}css/global.css\">"
+        global_js_string = f"<script src=\"{backtracks*'../'}js/global.js\" defer></script>"
         with open(source_folder+file, 'r', encoding='utf-8') as f:
             try:
                 file_content_raw = f.read()
@@ -63,7 +69,7 @@ def cobra_render(source_folder = 'content', build_folder = 'build'):
                 html_file_content = layout['content'].replace(content_tag, html_page_content)
                 # Insert global css path
                 if "</head>" in html_file_content:
-                    html_file_content = html_file_content.replace('</head>', f'\n{global_css_string}\n</head>')
+                    html_file_content = html_file_content.replace('</head>', f'\n{global_css_string}\n{global_js_string}\n</head>')
             except Exception as e:
                 print(f"Error converting to html: {str(e)}")
 
