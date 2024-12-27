@@ -7,7 +7,8 @@ from cobra_ssg import cobra_render
 from cobra_utils import get_folder_list, get_file_list
 
 class TestCobraRender(unittest.TestCase):
-    def setUp(self):
+    @classmethod
+    def setUpClass(self):
         # Setup the mock content folder
         self.temp_dir = mkdtemp()
         self.content_dir = os.path.join(self.temp_dir, 'content')
@@ -18,13 +19,13 @@ class TestCobraRender(unittest.TestCase):
         self.build_dir = os.path.join(self.temp_dir, 'build')
         self.css_dir_target = os.path.join(self.build_dir, 'css')
         self.pages_sub_dir = os.path.join(self.pages_dir, 'subdir')
-        self.menus_dir = os.path.join(self.layouts_dir, 'menus')
+        self.blocks_dir = os.path.join(self.layouts_dir, 'blocks')
         os.makedirs(self.content_dir)
         os.makedirs(self.pages_dir)
         os.makedirs(self.layouts_dir)
         os.makedirs(self.css_dir_source)
         os.makedirs(self.pages_sub_dir)
-        os.makedirs(self.menus_dir)
+        os.makedirs(self.blocks_dir)
         os.makedirs(self.js_dir)
         self.layout_file_1 = os.path.join(self.layouts_dir, 'default.html')
         self.layout_file_2 = os.path.join(self.layouts_dir, 'layout_alternative.html')
@@ -33,7 +34,7 @@ class TestCobraRender(unittest.TestCase):
         self.layout_css_file_2 = os.path.join(self.css_dir_source, 'test_2.css')
         self.md_file_1 = os.path.join(self.pages_dir, 'test_1.md')
         self.md_file_2 = os.path.join(self.pages_sub_dir, 'test_2.md')
-        self.main_menu_file = os.path.join(self.menus_dir, 'main_menu.html')
+        self.main_block_file = os.path.join(self.blocks_dir, 'main_block.html')
         self.js_file = os.path.join(self.js_dir, 'global.js')
         with open(self.layout_file_1, 'w') as f_layout:
             f_layout.writelines([
@@ -42,7 +43,7 @@ class TestCobraRender(unittest.TestCase):
                 "<title>Title of the default layout</title>"
                 "</head>\n",
                 "<body>\n",
-                "<menu_main_menu>\n",
+                "<block_main_block>\n",
                 "<cobra_ssg_content>\n",
                 "</body>\n",
                 "</html>\n",
@@ -55,7 +56,7 @@ class TestCobraRender(unittest.TestCase):
                 "<title>Title of the layout alternative</title>"
                 "</head>\n",
                 "<body>\n",
-                "<menu_main_menu>\n",
+                "<block_main_block>\n",
                 "<cobra_ssg_content>\n",
                 "</body>\n",
                 "</html>\n",
@@ -101,8 +102,8 @@ class TestCobraRender(unittest.TestCase):
                 "This is the content of file 2\n"
             ])
         f2.close()
-        with open(self.main_menu_file, 'w') as f_menu:
-            f_menu.writelines([
+        with open(self.main_block_file, 'w') as f_block:
+            f_block.writelines([
                 "<nav>\n",
                 "<ul>\n",
                 "<li><a href=\"/section1\">Section 1</a></li>\n",
@@ -112,7 +113,7 @@ class TestCobraRender(unittest.TestCase):
                 "</ul>\n",
                 "</nav>\n",
             ])
-        f_menu.close()
+        f_block.close()
         with open(self.js_file, 'w') as f_js:
             f_js.writelines([
                 "console.log(1+1)\n",
@@ -141,7 +142,7 @@ class TestCobraRender(unittest.TestCase):
         folders_in_content = get_folder_list(self.content_dir)
         folders_in_build = get_folder_list(self.build_dir)
         for folder in folders_in_content:
-            if folder == '/layouts/menus':
+            if folder == '/layouts/blocks':
                 continue
             elif folder == '/layouts/css':        # The /layouts/css folder is copied to /css
                 folder = '/css'
@@ -154,7 +155,7 @@ class TestCobraRender(unittest.TestCase):
 
     # Test that every markdown file in the content folder is copied to the build folder
     def test_verify_markdown_files_copied_to_build_folder(self):
-        files_in_content = get_file_list(self.content_dir, ['layouts', 'menus'])
+        files_in_content = get_file_list(self.content_dir, ['layouts', 'blocks'])
         files_in_build = get_file_list(self.build_dir)
         if len(files_in_build) == 0:
             self.fail("There is no files in the build folder!")
@@ -203,8 +204,8 @@ class TestCobraRender(unittest.TestCase):
 </head>
 """, self.file2_content)
 
-    # Test that the main menu is included in the layout
-    def test_main_menu_is_included(self):
+    # Test that the main block is included in the layout
+    def test_main_block_is_included(self):
         for file in [self.file1_content, self.file2_content]:
             self.assertIn("""
 <body>
@@ -223,7 +224,8 @@ class TestCobraRender(unittest.TestCase):
         self.assertIn("<title>Title of the default layout</title>", self.file1_content)
         self.assertIn("<title>Title of the layout alternative</title>", self.file2_content)
 
-    def tearDown(self):
+    @classmethod
+    def tearDownClass(self):
         # Clean the mock content folder
         rmtree(self.temp_dir)
 

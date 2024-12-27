@@ -11,7 +11,7 @@ def cobra_render(source_folder = 'content', build_folder = 'build'):
     js_folder_source = f"{source_folder}/{layouts_folder}/js"
     js_folder_target = f"{build_folder}/js"
     layouts_full_path = os.path.join(source_folder, layouts_folder)
-    menus_full_path = os.path.join(layouts_full_path, 'menus')
+    blocks_full_path = os.path.join(layouts_full_path, 'blocks')
     content_tag = '<cobra_ssg_content>'
 
     # Create the folder structure
@@ -28,7 +28,7 @@ def cobra_render(source_folder = 'content', build_folder = 'build'):
 
     # Load layouts
     layouts = []
-    layouts_to_load = [layout for layout in get_file_list(path=layouts_full_path, ignore_folders=["menus"]) if os.path.splitext(layout)[1] != '.css']
+    layouts_to_load = [layout for layout in get_file_list(path=layouts_full_path, ignore_folders=["blocks"]) if os.path.splitext(layout)[1] != '.css']
     if not len(layouts_to_load):
         raise Exception(f"No layouts found in {layouts_full_path}")
     for layout in layouts_to_load:
@@ -36,22 +36,22 @@ def cobra_render(source_folder = 'content', build_folder = 'build'):
             name = os.path.splitext(layout)[0].lstrip('/')
             layouts.append({'name': name, 'content': layout_content.read()})
 
-    # Load menus
-    menus = []
-    menus_to_load = [menu for menu in get_file_list(path=menus_full_path)]
-    for menu in menus_to_load:
-        with open(menus_full_path+menu, 'r', encoding='utf-8') as menu_content:
-            tag = f"<menu_{os.path.splitext(menu)[0].lstrip('/')}>"
-            menus.append({'tag': tag, 'content': menu_content.read()})
+    # Load blocks
+    blocks = []
+    blocks_to_load = [block for block in get_file_list(path=blocks_full_path)]
+    for block in blocks_to_load:
+        with open(blocks_full_path+block, 'r', encoding='utf-8') as block_content:
+            tag = f"<block_{os.path.splitext(block)[0].lstrip('/')}>"
+            blocks.append({'tag': tag, 'content': block_content.read()})
 
-    # insert the menus into the layouts
+    # insert the blocks into the layouts
     for layout in layouts:
-        for menu in menus:
-            if menu["tag"] in layout["content"]:
-                layout["content"] = layout["content"].replace(menu["tag"], menu["content"])
+        for block in blocks:
+            if block["tag"] in layout["content"]:
+                layout["content"] = layout["content"].replace(block["tag"], block["content"])
 
     # Convert markdown to html and copies the file in the build folder
-    content_files_to_copy = get_file_list(path=source_folder, ignore_folders=[layouts_folder, "css", "menus", "js"])
+    content_files_to_copy = get_file_list(path=source_folder, ignore_folders=[layouts_folder, "css", "blocks", "js"])
     if not len(content_files_to_copy):
         raise Exception(f"No files found in {source_folder}")
     for file in content_files_to_copy:
