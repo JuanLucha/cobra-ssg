@@ -2,7 +2,7 @@ import os
 import markdown
 import frontmatter
 import shutil
-from cobra_utils import get_file_list, get_folder_list
+from .cobra_utils import get_file_list, get_folder_list
 
 def cobra_render(source_folder = 'content', build_folder = 'build'):
     layouts_folder = 'layouts'
@@ -77,3 +77,5 @@ def cobra_render(source_folder = 'content', build_folder = 'build'):
         with open(file_without_ext, 'w', encoding="utf-8", errors="xmlcharrefreplace") as f:
             f.write(html_file_content)
 
+if __name__ == "__main__":
+    cobra_render()

@@ -76,8 +76,20 @@ This is the content of the incredible page
 
 The value of `layout` in the front matter will be used to look for the proper layout in the `content/layouts` folder, with the `html` extension (in the example, `content/layouts/standard-incredible-layout.html`). If no `layout` variable is found in the front matter, the `content/layouts/default.html` layout will be used at the time of `html` conversion.
 
+## Usage
+
+Once you have a folder structure as described above, you can install the `cobra-ssg` package:
+
+- With pip: `pip install cobra-ssg`
+- With poetry: `poetry add cobra-ssg`
+
+Then you have the `cobra-ssg` command available in your root folder. The command runs like this:
+
+- If you want 
+`cobra-ssg`
+
 ## Tests
 
-All the tests in Cobra SSG are placed in `test_cobra_ssg_e2e.py`. As the file implies, they are end to end tests, testing the whole logic at the same time.
+All the tests in Cobra SSG are placed in `tests/test_cobra_ssg_e2e.py`. As the file implies, they are end to end tests, testing the whole logic at the same time.
 
 In order to execute it, run the `test.sh` file in your terminal. Before that you need to install the dependencies with `poetry install` on the root of the project.

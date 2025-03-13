@@ -156,3 +156,6 @@ cython_debug/
 
 # OS specific
 .DS_Store
+
+# Content folder
+content/
