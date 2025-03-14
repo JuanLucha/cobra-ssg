@@ -4,7 +4,7 @@ from tempfile import mkdtemp
 from shutil import rmtree
 
 from cobra_ssg import cobra_render
-from cobra_utils import get_folder_list, get_file_list
+from cobra_ssg.cobra_utils import get_folder_list, get_file_list
 
 class TestCobraRender(unittest.TestCase):
     @classmethod
@@ -34,7 +34,7 @@ class TestCobraRender(unittest.TestCase):
         self.layout_css_file_2 = os.path.join(self.css_dir_source, 'test_2.css')
         self.md_file_1 = os.path.join(self.pages_dir, 'test_1.md')
         self.md_file_2 = os.path.join(self.pages_sub_dir, 'test_2.md')
-        self.main_block_file = os.path.join(self.blocks_dir, 'main_block.html')
+        self.menu_block_file = os.path.join(self.blocks_dir, 'menu_block.html')
         self.js_file = os.path.join(self.js_dir, 'global.js')
         with open(self.layout_file_1, 'w') as f_layout:
             f_layout.writelines([
@@ -43,7 +43,7 @@ class TestCobraRender(unittest.TestCase):
                 "<title>Title of the default layout</title>"
                 "</head>\n",
                 "<body>\n",
-                "<block_main_block>\n",
+                "<block_menu_block>\n",
                 "<cobra_ssg_content>\n",
                 "</body>\n",
                 "</html>\n",
@@ -56,7 +56,7 @@ class TestCobraRender(unittest.TestCase):
                 "<title>Title of the layout alternative</title>"
                 "</head>\n",
                 "<body>\n",
-                "<block_main_block>\n",
+                "<block_menu_block>\n",
                 "<cobra_ssg_content>\n",
                 "</body>\n",
                 "</html>\n",
@@ -102,7 +102,7 @@ class TestCobraRender(unittest.TestCase):
                 "This is the content of file 2\n"
             ])
         f2.close()
-        with open(self.main_block_file, 'w') as f_block:
+        with open(self.menu_block_file, 'w') as f_block:
             f_block.writelines([
                 "<nav>\n",
                 "<ul>\n",
@@ -204,8 +204,8 @@ class TestCobraRender(unittest.TestCase):
 </head>
 """, self.file2_content)
 
-    # Test that the main block is included in the layout
-    def test_main_block_is_included(self):
+    # Test that the menu block is included in the layout
+    def test_menu_block_is_included(self):
         for file in [self.file1_content, self.file2_content]:
             self.assertIn("""
 <body>
