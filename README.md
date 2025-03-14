@@ -8,7 +8,7 @@ This is a static page generator written from scratch with a test driven developm
 Note: in the content sections we are about to describe, you have the freedom to create your content files with whatever name you like. That being said, we suggest using names without special characters nor spaces. Camel case or snake case are great for naming folders and files and avoid any complications or weird URLs on your site.
 ```
 
-A website in Cobra SSG is compose of several elements, all of them contained in the `content` folder. Here are the different elements and how they work:
+A website in Cobra SSG is compose of several elements, all of them contained in the `content` folder (although you can name this folder in a different way and then pass it to the `cobra-ssg` command with the `-s` parameter). Here are the different elements and how they work:
 
 ### Layouts
 
@@ -85,8 +85,11 @@ Once you have a folder structure as described above, you can install the `cobra-
 
 Then you have the `cobra-ssg` command available in your root folder. The command runs like this:
 
-- If you want 
-`cobra-ssg`
+`cobra-ssg -s [source_folder] -b [build_folder]`
+
+`source_folder` is the content folder with the structure explained above in this document. If you don't provide this folder, the default value is `content`.
+
+`build_folder` is the target folder, where the markdown files will be transformed into `html` files.
 
 ## Tests
 
