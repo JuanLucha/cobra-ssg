@@ -26,11 +26,11 @@ There are some mandatory files and folders to be found in the `content/layouts` 
 - `content/layouts/css/post.css`: this file is only mandatory if you have a `content/blog` folder on the site. If that's not the case, you can skip it. It contains the specific style rules that only the post content page will use.
 - `content/layouts/js/global.js`: this file contains the javascript code shared by the whole site.
 
+The layout html content should include a `<cobra_ssg_content>` tag. That tab will be replaced with the content of the actual route. For example, if the page the user is in is `/about` and that page uses de `default` layout, the content of the `content/pages/about.md` page will be inserted in the `<cobra_ssg_content>` place in the html document.
+
 In order to create a new layout, you create a file under `content/layouts` with the name of the layout and html extension, like `content/layouts/new-layout.html`. In the content of the file, create the layout in html. Don't include the base tags, like `<html>`, `<head>` or `<body>`, as those will be inserted automatically during the build process.
 
 If you need specific css rules for this new layout, include it in a css file with the same name. In this example, that file would be `content/layouts/css/new-layout.css`.
-
-The layout html content should include a `<cobra_ssg_content>` tag. That tab will be replaced with the content of the actual route. For example, if the page the user is in is `/about` and that page uses de `default` layout, the content of the `content/pages/about.md` page will be inserted in the `<cobra_ssg_content>` place in the html document.
 
 ### Blocks
 
@@ -51,9 +51,9 @@ To use that you need to put a tag in the desired place inside the html content o
 
 ### Blog
 
-The `content/blog` folder contains all the articles of the blog. These articles are markdown files with a name in this format: `[YYYY-MM-DD]-name-of-the-article.md`. For example, `2024-09-15-this-is-a-new-blog-post.md`. That makes the files to order from date in a folder setup to order alphabetically. Why don't just use the date of the file instead of the filename? Because the articles can be rewritten, or written later, but with the same published date then before.
+The `content/blog` folder contains all the articles of the blog. These articles are markdown files with a name in this format: `YYYY-MM-DD-name-of-the-article.md`. For example, `2024-09-15-this-is-a-new-blog-post.md`. That makes the files to order from date in a folder setup to order alphabetically. Why don't just use the date of the file instead of the filename? Because the articles can be rewritten, or written later, but with the same published date then before.
 
-The layout used for the list of these files is the one defined in `content/layouts/blog.html`. The layout used for the content view of each file is defined in `content/layouts/post.html`.
+The layout used for the list of these files is the one defined in `content/layouts/blog.html`. The layout used for the content view of each file is defined in `content/layouts/post.html`. Remember that all the layout html files should include a `<cobra_ssg_content>` tag, where it will render the content.
 
 The URL of the blog list has the format `https://yoursite.com/blog/1`, where `1` in that example is the number of page in the post list (it's the pagination mechanism). The URL of the posts hang from the `blog` route, like this: `https://yoursite.com/blog/2024-09-15-this-is-a-new-blog-post`.
 

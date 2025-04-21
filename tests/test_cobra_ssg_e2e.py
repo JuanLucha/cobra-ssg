@@ -27,6 +27,10 @@ class TestCobraRender(unittest.TestCase):
         os.makedirs(self.pages_sub_dir)
         os.makedirs(self.blocks_dir)
         os.makedirs(self.js_dir)
+
+        # Create the build directory before running cobra_render to test that cobra_render deletes it before creating a new one
+        os.makedirs(self.build_dir, exist_ok=True)
+
         self.layout_file_1 = os.path.join(self.layouts_dir, 'default.html')
         self.layout_file_2 = os.path.join(self.layouts_dir, 'layout_alternative.html')
         self.global_css_file = os.path.join(self.css_dir_source, 'global.css')
@@ -48,7 +52,6 @@ class TestCobraRender(unittest.TestCase):
                 "</body>\n",
                 "</html>\n",
             ])
-        f_layout.close()
         with open(self.layout_file_2, 'w') as f_layout:
             f_layout.writelines([
                 "<html>\n",
@@ -61,7 +64,6 @@ class TestCobraRender(unittest.TestCase):
                 "</body>\n",
                 "</html>\n",
             ])
-        f_layout.close()
         with open(self.global_css_file, 'w') as f_global_css:
             f_global_css.writelines([
                 "* {\n",
@@ -69,7 +71,6 @@ class TestCobraRender(unittest.TestCase):
                 "  padding:0;\n",
                 "}\n",
             ])
-        f_global_css.close()
         with open(self.layout_css_file_1, 'w') as f_layout_css_1:
             f_layout_css_1.writelines([
                 "* {\n",
@@ -77,7 +78,6 @@ class TestCobraRender(unittest.TestCase):
                 "  padding:0;\n",
                 "}\n",
             ])
-        f_layout_css_1.close()
         with open(self.layout_css_file_2, 'w') as f_layout_css_2:
             f_layout_css_2.writelines([
                 "* {\n",
@@ -85,14 +85,12 @@ class TestCobraRender(unittest.TestCase):
                 "  padding:0;\n",
                 "}\n",
             ])
-        f_layout_css_2.close()
         with open(self.md_file_1, 'w') as f1:
             f1.writelines([
                 "# Title of file 1\n",
                 "This is the content of file 1\n"
                 "[This is a link to file 2](subdir/test_2)\n"
             ])
-        f1.close()
         with open(self.md_file_2, 'w') as f2:
             f2.writelines([
                 "---\n",
@@ -101,7 +99,6 @@ class TestCobraRender(unittest.TestCase):
                 "# Title of file 2\n",
                 "This is the content of file 2\n"
             ])
-        f2.close()
         with open(self.menu_block_file, 'w') as f_block:
             f_block.writelines([
                 "<nav>\n",
@@ -113,25 +110,21 @@ class TestCobraRender(unittest.TestCase):
                 "</ul>\n",
                 "</nav>\n",
             ])
-        f_block.close()
         with open(self.js_file, 'w') as f_js:
             f_js.writelines([
                 "console.log(1+1)\n",
             ])
-        f_js.close()
 
-        # render the build folder
+        # Render the build folder
         cobra_render(self.content_dir, self.build_dir)
         
-        # read the built content files
-        file_without_ext = os.path.splitext(self.build_dir+'/pages/test_1')[0]
-        with open(file_without_ext, 'r') as f:
+        # Read the built content files
+        file_with_ext = f"{self.build_dir}/pages/test_1.html"
+        with open(file_with_ext, 'r') as f:
             self.file1_content = f.read()
-        f.close()
-        file_without_ext = os.path.splitext(self.build_dir+'/pages/subdir/test_2')[0]
-        with open(file_without_ext, 'r') as f:
+        file_with_ext = f"{self.build_dir}/pages/subdir/test_2.html"
+        with open(file_with_ext, 'r') as f:
             self.file2_content = f.read()
-        f.close()
 
     # Test the main 'build' folder is created
     def test_verify_build_dir_created(self):
@@ -158,7 +151,7 @@ class TestCobraRender(unittest.TestCase):
         files_in_content = get_file_list(self.content_dir, ['layouts', 'blocks'])
         files_in_build = get_file_list(self.build_dir)
         if len(files_in_build) == 0:
-            self.fail("There is no files in the build folder!")
+            self.fail("There are no files in the build folder!")
         for file in files_in_content:
             file_name, file_extension = os.path.splitext(file)
             if file_extension == ".css":
@@ -166,7 +159,7 @@ class TestCobraRender(unittest.TestCase):
             elif file_extension == ".js":
                 file_to_check = file.replace('/layouts/js', '/js')
             else:
-                file_to_check = file_name
+                file_to_check = f"{file_name}.html"  # Ensure the extension is .html
             self.assertTrue(file_to_check in files_in_build, f"File {file_to_check} was not created")
 
     # Test that every markdown file is converted into html with layout in the build folder

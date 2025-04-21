@@ -14,6 +14,10 @@ def cobra_render(source_folder = 'content', build_folder = 'build'):
     blocks_full_path = os.path.join(layouts_full_path, 'blocks')
     content_tag = '<cobra_ssg_content>'
 
+    # If the build folder already exists, delete it
+    if os.path.exists(build_folder):
+        shutil.rmtree(build_folder)
+
     # Create the folder structure
     os.mkdir(build_folder)
     folders_to_copy = get_folder_list(path=source_folder, ignore_folders=[layouts_folder])
@@ -73,8 +77,10 @@ def cobra_render(source_folder = 'content', build_folder = 'build'):
             except Exception as e:
                 print(f"Error converting to html: {str(e)}")
 
-        file_without_ext = os.path.splitext(build_folder+file)[0]
-        with open(file_without_ext, 'w', encoding="utf-8", errors="xmlcharrefreplace") as f:
+        relative_file_path = file.lstrip("/")  # Elimina cualquier barra inicial para evitar rutas absolutas
+        file_path = os.path.join(build_folder, os.path.splitext(relative_file_path)[0] + ".html")
+        os.makedirs(os.path.dirname(file_path), exist_ok=True)  # Crear directorios si no existen
+        with open(file_path, 'w', encoding="utf-8", errors="xmlcharrefreplace") as f:
             f.write(html_file_content)
 
 if __name__ == "__main__":

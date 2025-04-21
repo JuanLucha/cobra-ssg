@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "cobra-ssg"
-version = "0.1.2"
+version = "0.1.5"
 description = "Simple static site generator developed using TDD"
 authors = ["Juan Lucha <juanlucha@gmail.com>"]
 readme = "README.md"
